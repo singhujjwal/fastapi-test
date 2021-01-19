@@ -17,4 +17,6 @@ async def shutdown():
     await database.disconnect()
 
 
-app.include_router(movies)
+#app.include_router(movies)
+
+app.include_router(movies, prefix='/api/v1/movies', tags=['movies'])
