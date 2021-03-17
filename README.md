@@ -5,6 +5,15 @@ Enough of just DevOps !!!
 ## Now comes a demo project on top of fastapi
 I have few resources available, I need to create a distributed application
 
+## Build docker images
+   `docker build -t singhujjwal/cast-service:0.1 .`
+   `docker image push singhujjwal/cast-service:0.1`
+
+
+   `docker build -t singhujjwal/movie-service:0.1 .`
+   `docker image push singhujjwal/movie-service:0.1`
+
+
 ### Redis for cache - memcache
 ### Postgresql for database
 ### Message queue KAFKA or RabbitMQ TBD

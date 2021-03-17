@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   movie_service:
-    build: ./movie-service
+    image: singhujjwal/movie-service:0.1
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
       - ./movie-service/:/app/
@@ -22,7 +22,7 @@ services:
       - POSTGRES_DB=movie_db_dev
 
   cast_service:
-    build: ./cast-service
+    image: singhujjwal/cast-service:0.1
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
       - ./cast-service/:/app/
