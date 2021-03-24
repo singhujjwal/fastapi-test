@@ -15,6 +15,14 @@ I have few resources available, I need to create a distributed application
 
 
 ### Redis for cache - memcache
+Update the redis service to use the clusterIP type and don't expose it as a loadbnalancer service as it doesn't need to be accessed from outside.
+
+Also utilize the nginx ingress controller to access the redis via the port 80 
+to access redis cli.
+
+`rdcli -h redis.civo.singhjee.in -a passwd -p 80`
+
+
 ### Postgresql for database
 ### Message queue KAFKA or RabbitMQ TBD
 ### Python based backend dockers
