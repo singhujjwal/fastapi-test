@@ -8,6 +8,7 @@ I have few resources available, I need to create a distributed application
 ## Build docker images
    `docker build -t singhujjwal/cast-service:0.1 .`
    `docker image push singhujjwal/cast-service:0.1`
+   `docker run -it --rm --name cast-service -w /app singhujjwal/cast-service:0.1 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
 
 
    `docker build -t singhujjwal/movie-service:0.1 .`
@@ -20,7 +21,7 @@ Update the redis service to use the clusterIP type and don't expose it as a load
 Also utilize the nginx ingress controller to access the redis via the port 80 
 to access redis cli.
 
-`rdcli -h redis.civo.singhjee.in -a passwd -p 80`
+`rdcli -h civo.singhjee.in/redis -a passwd -p 80`
 
 
 ### Postgresql for database
