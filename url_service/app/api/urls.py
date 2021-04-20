@@ -3,13 +3,10 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
 
-from app.api.models import MovieOut, MovieIn, MovieUpdate
-from app.api import db_manager
-from app.api.service import is_cast_present
 
-movies = APIRouter()
+urls = APIRouter()
 
-@movies.post('/', response_model=MovieOut, status_code=201)
+@urls.post('/', response_model=MovieOut, status_code=201)
 async def create_movie(payload: MovieIn):
     for cast_id in payload.casts_id:
         if not is_cast_present(cast_id):

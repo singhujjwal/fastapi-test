@@ -1,0 +1,39 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: url-service
+  name: url-service
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: url-service
+  template:
+    metadata:
+      labels:
+        app: url-service
+    spec:
+      containers:
+      - name: url-service
+        image: singhujjwal/url-service:0.1
+        command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+        workingDir: /app/
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /api/v1/urls/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+
