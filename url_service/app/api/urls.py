@@ -19,6 +19,7 @@ async def get_short_url(payload: UrlIn):
 @urls.get('/{in_url}/', response_model=UrlOut)
 async def get_long_url(in_url: str):
     long_url = await url_manager.get_long_url(in_url)
+    print ("rturned long url from the url_manager")
     if not long_url:
         raise HTTPException(status_code=404, detail="No long url mapped to this short url")
     return long_url
