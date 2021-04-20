@@ -13,5 +13,3 @@ spec:
     app: redis
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}

@@ -32,7 +32,12 @@ metadata:
     app: movie-service
   name: movie-service
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 1
   selector:
     matchLabels:
       app: movie-service
@@ -54,6 +59,13 @@ spec:
         ports:
         - containerPort: 8000
           protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /api/v1/movies/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
 
 ---
 apiVersion: v1
