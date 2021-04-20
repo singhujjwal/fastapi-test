@@ -15,7 +15,7 @@ async def get_short_url(payload: UrlIn):
     }
     return response
 
-@movies.get('/{shortUrl}/', response_model=UrlOut)
+@urls.get('/{shortUrl}/', response_model=UrlOut)
 async def get_long_url(in_url: str):
     long_url = await url_manager.get_long_url(in_url)
     if not long_url:
