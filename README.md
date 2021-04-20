@@ -16,7 +16,8 @@ I have few resources available, I need to create a distributed application
 
    `docker build -t singhujjwal/url-service:0.1 .`
    `docker image push singhujjwal/url-service:0.1`
-   `docker run -it --rm --name urls -w /app singhujjwal/url-service:0.1 uvicorn app.main:app --reload --host 0.0.0.0 --port 8121`
+   `docker run -it --rm --name urls -w /app -p 8121:8121 singhujjwal/url-service:0.1 uvicorn app.main:app --reload --host 0.0.0.0 --port 8121`
+   `docker image push singhujjwal/url-service:0.1`
 
 
 
