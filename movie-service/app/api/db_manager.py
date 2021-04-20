@@ -5,7 +5,6 @@ from app.api.db import movies, database
 
 
 async def add_movie(payload: MovieIn):
-    query = movies.insert().values(**payload.dict())
 
     return await database.execute(query=query)
 
