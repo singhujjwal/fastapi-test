@@ -14,6 +14,12 @@ I have few resources available, I need to create a distributed application
    `docker build -t singhujjwal/movie-service:0.1 .`
    `docker image push singhujjwal/movie-service:0.1`
 
+   `docker build -t singhujjwal/url-service:0.1 .`
+   `docker image push singhujjwal/url-service:0.1`
+   `docker run -it --rm --name urls -w /app singhujjwal/url-service:0.1 uvicorn app.main:app --reload --host 0.0.0.0 --port 8121`
+
+
+
 
 ### Redis for cache - memcache
 Update the redis service to use the clusterIP type and don't expose it as a loadbnalancer service as it doesn't need to be accessed from outside.
