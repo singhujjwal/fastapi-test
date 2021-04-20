@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 class UrlIn(BaseModel):
-    url: str
+    longUrl: str
 
-class UrlOut(UrlIn):
+class UrlOut(BaseModel):
     shortUrl: str
 
