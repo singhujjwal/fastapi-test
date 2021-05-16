@@ -1,0 +1,20 @@
+---
+integrations:
+  - name: nri-flex
+    interval: 30m
+    config:
+      name: LinuxMemoryDetails
+      apis:
+        - name: LinuxMemoryDetails
+          commands:
+            - run: cat /proc/meminfo | awk '{print $1,$2}'
+              set_header: [name,value]
+              split_by: :\s+
+              split: horizontal
+        - name: LinuxProcDetails
+          commands:
+            - run: cat /proc/sys/fs/file-nr | awk '{print $1-$2,$3}'
+              set_header: [openFD,maxFD]
+              split_by: (\d+)\s+(.*)
+              split: horizontal
+              regex_match: true

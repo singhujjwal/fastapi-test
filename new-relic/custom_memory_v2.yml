@@ -1,0 +1,11 @@
+---
+integrations:
+  - name: nri-flex
+    interval: 1m
+    config:
+      name: OWMemoryDetails
+      apis:
+        - name: OWMemoryDetails
+          commands:
+            - run: python /etc/newrelic-infra/integrations.d/flexassets/cust
+om_memory.py
