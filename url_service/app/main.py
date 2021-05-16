@@ -13,6 +13,7 @@ import sys
 redis_client = None
 
 def redis_connect() -> redis.client.Redis:
+    return
     global redis_client
     try:
         if not redis_client:
