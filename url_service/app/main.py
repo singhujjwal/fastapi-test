@@ -7,23 +7,37 @@ import os
 import asyncio
 from random import randint
 import aiokafka
+import redis
+import sys
+
+redis_client = None
+
+def redis_connect() -> redis.client.Redis:
+    global redis_client
+    try:
+        if not redis_client:
+            redis_client = redis.Redis(
+                host="212.2.241.224",
+                port=6379,
+                password="bu1OPozjX4TMMhJItvbCtCo3SG8wm1",
+                db=0,
+                socket_timeout=5,
+            )
+            ping = redis_client.ping()
+            if ping is True:
+                print ("Successfully connected to redis...")
+                return redis_client
+        else:
+            return redis_client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)
+
 
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 log = logging.getLogger(__name__)
-
-
-# global variables
-consumer_task = None
-consumer = None
-_state = 0
-
-# env variables
-KAFKA_TOPIC = 'URL'
-KAFKA_CONSUMER_GROUP_PREFIX = os.getenv('KAFKA_CONSUMER_GROUP_PREFIX', 'group')
-KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', '212.2.247.12:9092')
-
 
 app = FastAPI(openapi_url="/api/v1/urls/openapi.json", docs_url="/api/v1/urls/docs")
 app.include_router(urls, prefix='/api/v1/urls', tags=['urls'])
@@ -38,6 +52,9 @@ async def startup_event():
 
 async def initialize():
     loop = asyncio.get_event_loop()
+    log.info("Initialized the Redis Connection........")
+    redis_connect()
+    return
     global consumer
     group_id = f'{KAFKA_CONSUMER_GROUP_PREFIX}-{randint(0, 10000)}'
     log.debug(f'Initializing KafkaConsumer for topic {KAFKA_TOPIC}, group_id {group_id}'
@@ -72,3 +89,9 @@ async def initialize():
         # update the API state
         _update_state(msg)
         return
+
+
+async def consume():
+    return
+    global consumer_task
+    consumer_task = asyncio.create_task(send_consumer_message(consumer))

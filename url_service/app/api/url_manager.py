@@ -2,6 +2,23 @@ from app.api.models import UrlIn, UrlOut
 import hashlib
 import logging
 
+from datetime import timedelta
+
+
+def get_routes_from_cache(key: str) -> str:
+    """Get data from redis."""
+
+    val = client.get(key)
+    return val
+
+
+def set_routes_to_cache(key: str, value: str) -> bool:
+    """Set data to redis."""
+
+    state = client.setex(key, timedelta(seconds=3600), value=value, )
+    return state
+
+
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -44,11 +61,16 @@ def get_tiny_url(input_url):
     decimal_value = int(hexnumber, 16)
     return base_encode(decimal_value)
 
+async def does_exists_in_redis():
+    print ("Is it present in redis..")
+    return True
+
 async def get_short_url(payload: UrlIn):
     print ("Getting short url....")
-    print ("The url input is {}".format(UrlIn.longUrl))
+    print (payload.longUrl)
     result_json = {}
-    result_json['tinyUrl'] = get_tiny_url(UrlIn.longUrl)
+    result_json['tinyUrl'] = get_tiny_url(payload.longUrl)
+    print ("the tinyurl returned is {}".format(result_json['tinyUrl']))
     return result_json
 
 async def get_long_url(short_url: str):
