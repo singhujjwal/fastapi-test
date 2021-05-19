@@ -31,20 +31,18 @@ log = logging.getLogger(__name__)
 BASE_LIST = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGGHIJKLMNOPQRSTUVWXYZ'
 BASE_DICT = dict((c, i) for i, c in enumerate(BASE_LIST))
 
-def base_encode(integer, base=BASE_LIST):
-    if integer == 0:
+def base_encode(hash_val: int, base=BASE_LIST) -> str:
+    if hash_val == 0:
         return base[0]
-
     length = len(base)
     ret = ''
-    while integer != 0:
-        ret = base[integer % length] + ret
-        integer /= length
-
+    while hash_val != 0:
+        ret = base[hash_val % length] + ret
+        hash_val = int(hash_val/length)
     return ret
 
 
-def get_tiny_url(input_url):
+def get_tiny_url(input_url: str) -> str:
     '''
     Design :
     1. Suppose we have a-z, A-Z and 0-9 and _ and @ as the characters in the tinyurl there will total of
@@ -56,8 +54,10 @@ def get_tiny_url(input_url):
 
     '''
     
-    h = hashlib.md5(input_url.encode())
+    h = hashlib.md5(input_url.encode('ascii'))
     hexnumber = h.hexdigest()[:11]
+    # import pdb
+    # pdb.set_trace()
     decimal_value = int(hexnumber, 16)
     return base_encode(decimal_value)
 
