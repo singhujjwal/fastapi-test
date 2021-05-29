@@ -1,22 +1,22 @@
-from app.api.models import UrlIn, UrlOut
+from .models import UrlIn, UrlOut
 import hashlib
 import logging
 
 from datetime import timedelta
 
 
-def get_routes_from_cache(key: str) -> str:
-    """Get data from redis."""
+# def get_routes_from_cache(key: str) -> str:
+#     """Get data from redis."""
 
-    val = client.get(key)
-    return val
+#     val = client.get(key)
+#     return val
 
 
-def set_routes_to_cache(key: str, value: str) -> bool:
-    """Set data to redis."""
+# def set_routes_to_cache(key: str, value: str) -> bool:
+#     """Set data to redis."""
 
-    state = client.setex(key, timedelta(seconds=3600), value=value, )
-    return state
+#     state = client.setex(key, timedelta(seconds=3600), value=value, )
+#     return state
 
 
 
