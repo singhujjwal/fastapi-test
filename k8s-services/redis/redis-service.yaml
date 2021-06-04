@@ -12,4 +12,4 @@ spec:
   selector:
     app: redis
   sessionAffinity: None
-  type: ClusterIP
+  type: LoadBalancer

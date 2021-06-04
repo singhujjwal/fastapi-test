@@ -1,58 +1,44 @@
-#~/python-microservices/movie-service/app/api/movies.py
-
 from typing import List
+from ..dependencies import get_producer
+from aiokafka.producer.producer import AIOKafkaProducer
 from fastapi import APIRouter, HTTPException
+import logging
+
+# from ..dependencies import get_producer
+
+from fastapi.param_functions import Depends
+
+
+from .models import UrlOut, UrlIn
+from . import url_manager
+
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 urls = APIRouter()
 
-@urls.post('/', response_model=MovieOut, status_code=201)
-async def create_movie(payload: MovieIn):
-    for cast_id in payload.casts_id:
-        if not is_cast_present(cast_id):
-            raise HTTPException(status_code=404, detail=f"Cast with id:{cast_id} not found")
+@urls.post('/', response_model=UrlOut, status_code=201)
+async def get_short_url(payload: UrlIn, 
+    producer: AIOKafkaProducer =  Depends(get_producer)):
+    short_url = await url_manager.get_short_url(payload)
+# Check in database if the short_url and long_url keypair is present
+#   Later ensure collisions is not there
+#   Also set expiry 
+#   update_db(short_url, payload.longUrl)
 
-    movie_id = await db_manager.add_movie(payload)
     response = {
-        'id': movie_id,
-        **payload.dict()
+        **short_url
     }
-
     return response
 
-@movies.get('/', response_model=List[MovieOut])
-async def get_movies():
-    return await db_manager.get_all_movies()
-
-@movies.get('/{id}/', response_model=MovieOut)
-async def get_movie(id: int):
-    movie = await db_manager.get_movie(id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-    return movie
-
-@movies.put('/{id}/', response_model=MovieOut)
-async def update_movie(id: int, payload: MovieUpdate):
-    movie = await db_manager.get_movie(id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-
-    update_data = payload.dict(exclude_unset=True)
-
-    if 'casts_id' in update_data:
-        for cast_id in payload.casts_id:
-            if not is_cast_present(cast_id):
-                raise HTTPException(status_code=404, detail=f"Cast with given id:{cast_id} not found")
-
-    movie_in_db = MovieIn(**movie)
-
-    updated_movie = movie_in_db.copy(update=update_data)
-
-    return await db_manager.update_movie(id, updated_movie)
-
-@movies.delete('/{id}', response_model=None)
-async def delete_movie(id: int):
-    movie = await db_manager.get_movie(id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Movie not found")
-    return await db_manager.delete_movie(id)
+@urls.get('/{in_url}/', response_model=UrlOut)
+async def get_long_url(in_url: str):
+    long_url = await url_manager.get_long_url(in_url)
+    print ("rturned long url from the url_manager")
+    if not long_url:
+        raise HTTPException(status_code=404, 
+                detail="No long url mapped to this short url")
+    return long_url
