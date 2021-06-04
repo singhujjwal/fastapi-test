@@ -69,8 +69,8 @@ async def get_short_url(payload: UrlIn):
     print ("Getting short url....")
     print (payload.longUrl)
     result_json = {}
-    result_json['tinyUrl'] = get_tiny_url(payload.longUrl)
-    print ("the tinyurl returned is {}".format(result_json['tinyUrl']))
+    result_json['shortUrl'] = f"https://u.co/{get_tiny_url(payload.longUrl)}"
+    print ("the tinyurl returned is {}".format(result_json['shortUrl']))
     return result_json
 
 async def get_long_url(short_url: str):

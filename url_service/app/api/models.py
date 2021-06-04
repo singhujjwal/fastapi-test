@@ -7,5 +7,5 @@ class UrlIn(BaseModel):
     longUrl: str
 
 class UrlOut(BaseModel):
-    longUrl: str
+    shortUrl: str
 
