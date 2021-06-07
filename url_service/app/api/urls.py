@@ -34,12 +34,17 @@ async def get_short_url(payload: UrlIn,
     # redis_client: redis.client.Redis= redis_connect()
     ):
     redis_client = redis_connect()
-    short_url = await url_manager.get_short_url(redis_client, payload)
+    if redis_client:
+        short_url = await url_manager.get_short_url(redis_client, payload)
 
-    response = {
-        **short_url
-    }
-    return response
+        response = {
+            **short_url
+        }
+        return response
+    else:
+        raise HTTPException(status_code=500, 
+                detail="Redis cache connection problem")
+    
 
 @urls.get('/{in_url}/', response_model=UrlIn)
 async def get_long_url(in_url: str):

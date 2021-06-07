@@ -2,6 +2,7 @@ import redis
 import sys
 import os
 import logging
+from fastapi import HTTPException
 
 redis_client = None
 
@@ -30,7 +31,6 @@ REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 
 def redis_connect() -> redis.client.Redis:
     global redis_client
-    log.debug (f"This time the redis_client object is {redis_client}")
     try:
         if not redis_client:
             redis_client = redis.Redis(
@@ -48,5 +48,10 @@ def redis_connect() -> redis.client.Redis:
             log.debug ("Redis client object is already present, returning....")
             return redis_client
     except redis.AuthenticationError:
-        log.debug("AuthenticationError")
-        sys.exit(1)
+        log.critical("AuthenticationError")
+        raise HTTPException(status_code=500, 
+                detail="Redis cache connection problem")
+    except redis.ConnectionError:
+        log.critical("Failed to connect to redis....")
+        raise HTTPException(status_code=500, 
+                detail="Redis cache connection problem")
