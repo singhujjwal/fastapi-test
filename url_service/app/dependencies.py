@@ -25,6 +25,8 @@ consumer_task = None
 
 def get_producer() -> aiokafka.AIOKafkaProducer:
     global aioproducer
+    print ("Although producer is not being used and it is not explicitly defined in the router"
+    "but still it can be included in a path")
     return aioproducer
 
 async def initialize():
