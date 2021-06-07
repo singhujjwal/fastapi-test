@@ -15,14 +15,9 @@ CASSANDRA with DynamoDB
 
 ## Design
 
-1. Stateless webapplicaion receives request for shorteneing a url
-2. Need to send the response in synchronous mode so kafka is not a best thing here 
-but I need to plugin it here any way so the webapp calls the producer to push that message to kafka first (no redis at this point)
+## pre-reqs
 
+export REDIS_HOST='xxxxxx'
+export REDIS_PORT=16262
+export REDIS_PASSWORD=passwordlongone
 
-So 
-
-1
-
-1. Get the message and push to the queue
-2. Read from redis for 5 times and fail ---->

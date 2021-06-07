@@ -1,28 +1,17 @@
 from .models import UrlIn, UrlOut
 import hashlib
 import logging
-
-from datetime import timedelta
-
-
-# def get_routes_from_cache(key: str) -> str:
-#     """Get data from redis."""
-
-#     val = client.get(key)
-#     return val
+from ..utils.formatlogs import CustomFormatter
 
 
-# def set_routes_to_cache(key: str, value: str) -> bool:
-#     """Set data to redis."""
-
-#     state = client.setex(key, timedelta(seconds=3600), value=value, )
-#     return state
-
-
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
 
 
 # import string
@@ -62,19 +51,35 @@ def get_tiny_url(input_url: str) -> str:
     return base_encode(decimal_value)
 
 async def does_exists_in_redis():
-    print ("Is it present in redis..")
+    log.debug ("Is it present in redis..")
     return True
 
-async def get_short_url(payload: UrlIn):
-    print ("Getting short url....")
-    print (payload.longUrl)
+async def get_short_url(redis_client, payload: UrlIn):
+    log.debug ("Getting short url....")
+    log.debug (payload.longUrl)
     result_json = {}
-    result_json['shortUrl'] = f"https://u.co/{get_tiny_url(payload.longUrl)}"
-    print ("the tinyurl returned is {}".format(result_json['shortUrl']))
+   
+    # TODO: convert to async await
+    tiny_url = get_tiny_url(payload.longUrl)
+    
+    # Make below atomic ??
+    # TODO put a lock think how ??
+    if redis_client.exists(tiny_url):
+        log.info("tiny url already present in the cache, not putting it again...")
+    else:
+        redis_client.set(tiny_url, payload.longUrl)
+
+    # save some space by having the part http://u.co/
+    result_json['shortUrl'] = f"https://u.co/{tiny_url}"
+    log.debug ("the tinyurl returned is {}".format(result_json['shortUrl']))
     return result_json
 
-async def get_long_url(short_url: str):
-    print ("Getting Long url....")
-    result_json = {}
-    result_json['longUrl'] = 'my_long_url'
-    return result_json
+async def get_long_url(redis_client, short_url: str):
+    longUrl = None
+    if redis_client.exists(short_url):
+        longUrl = redis_client.get(short_url)
+        log.debug (f"Getting Long url....{longUrl}")
+    else:
+        log.info(f"No long url mapped to the short url {short_url}")
+
+    return longUrl

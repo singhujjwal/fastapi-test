@@ -1,21 +1,28 @@
 from fastapi import FastAPI
 from fastapi import Depends
 import logging
-
-
-
+import os
 
 from .api.urls import urls
 from .dependencies import get_producer, initialize, consume, consumer, consumer_task
-import os
+from .api.redis_py import redis_connect
+from .utils.formatlogs import CustomFormatter
 
 consumer = None
 consumer_task = None
-USE_KAFKA = os.getenv('USE_KAFKA', False)
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+
+USE_KAFKA = os.getenv('USE_KAFKA', False)
+USE_REDIS = os.getenv('USE_REDIS', True)
+
+
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
 
 
 app = FastAPI(openapi_url="/api/v1/urls/openapi.json", 
@@ -32,6 +39,7 @@ app = FastAPI(openapi_url="/api/v1/urls/openapi.json",
 
 app.include_router(
     urls, prefix='/api/v1/urls',
+    # dependencies=[Depends(redis_connect)],
     tags=['urls']
     )
 
@@ -42,6 +50,8 @@ async def startup_event():
     if USE_KAFKA:
         await initialize()
         await consume()
+
+
     # await get_producer().start()
 
 @app.on_event("shutdown")
@@ -50,3 +60,7 @@ async def shutdown_event():
     if USE_KAFKA:
         consumer_task.cancel()
         await consumer.stop()
+    if USE_REDIS:
+        redis_client = redis_connect()
+        redis_client.flushall()
+        redis_client.close()
