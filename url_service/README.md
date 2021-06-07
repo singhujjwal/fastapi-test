@@ -17,6 +17,8 @@ CASSANDRA with DynamoDB
 
 ## pre-reqs
 
+Dont forget to export the below variables for using REDIS cache
+
 export REDIS_HOST='xxxxxx'
 export REDIS_PORT=16262
 export REDIS_PASSWORD=passwordlongone
