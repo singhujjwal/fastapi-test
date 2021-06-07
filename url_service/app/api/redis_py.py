@@ -6,8 +6,18 @@ import logging
 redis_client = None
 
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+from ..utils.formatlogs import CustomFormatter
+
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
+
 
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = os.getenv('REDIS_PORT')
@@ -20,7 +30,7 @@ REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 
 def redis_connect() -> redis.client.Redis:
     global redis_client
-    print (f"This time the redis_client object is {redis_client}")
+    log.debug (f"This time the redis_client object is {redis_client}")
     try:
         if not redis_client:
             redis_client = redis.Redis(
@@ -32,11 +42,11 @@ def redis_connect() -> redis.client.Redis:
             )
             ping = redis_client.ping()
             if ping is True:
-                print ("Successfully connected to redis...")
+                log.debug ("Successfully connected to redis...")
                 return redis_client
         else:
-            print ("Redis client object is already present, returning....")
+            log.debug ("Redis client object is already present, returning....")
             return redis_client
     except redis.AuthenticationError:
-        print("AuthenticationError")
+        log.debug("AuthenticationError")
         sys.exit(1)

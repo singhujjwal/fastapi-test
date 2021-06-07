@@ -1,28 +1,17 @@
 from .models import UrlIn, UrlOut
 import hashlib
 import logging
-
-from datetime import timedelta
-
-
-# def get_routes_from_cache(key: str) -> str:
-#     """Get data from redis."""
-
-#     val = client.get(key)
-#     return val
+from ..utils.formatlogs import CustomFormatter
 
 
-# def set_routes_to_cache(key: str, value: str) -> bool:
-#     """Set data to redis."""
-
-#     state = client.setex(key, timedelta(seconds=3600), value=value, )
-#     return state
-
-
-
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.DEBUG)
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
 
 
 # import string
@@ -62,12 +51,12 @@ def get_tiny_url(input_url: str) -> str:
     return base_encode(decimal_value)
 
 async def does_exists_in_redis():
-    print ("Is it present in redis..")
+    log.debug ("Is it present in redis..")
     return True
 
 async def get_short_url(redis_client, payload: UrlIn):
-    print ("Getting short url....")
-    print (payload.longUrl)
+    log.debug ("Getting short url....")
+    log.debug (payload.longUrl)
     result_json = {}
    
     # TODO: convert to async await
@@ -82,7 +71,7 @@ async def get_short_url(redis_client, payload: UrlIn):
 
     # save some space by having the part http://u.co/
     result_json['shortUrl'] = f"https://u.co/{tiny_url}"
-    print ("the tinyurl returned is {}".format(result_json['shortUrl']))
+    log.debug ("the tinyurl returned is {}".format(result_json['shortUrl']))
     return result_json
 
 async def get_long_url(redis_client, short_url: str):

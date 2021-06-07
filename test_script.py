@@ -37,7 +37,6 @@ def get_long_url(shortUrl: str):
     print (r.text)
 
 if __name__ == '__main__':
-    # shortUrl = start_firing()
-    shortUrl ='xcasdA3'
+    shortUrl = start_firing()
     get_long_url(shortUrl)
 

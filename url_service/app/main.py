@@ -6,7 +6,7 @@ import os
 from .api.urls import urls
 from .dependencies import get_producer, initialize, consume, consumer, consumer_task
 from .api.redis_py import redis_connect
-
+from .utils.formatlogs import CustomFormatter
 
 consumer = None
 consumer_task = None
@@ -16,9 +16,13 @@ USE_KAFKA = os.getenv('USE_KAFKA', False)
 USE_REDIS = os.getenv('USE_REDIS', True)
 
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
 
 
 app = FastAPI(openapi_url="/api/v1/urls/openapi.json", 
@@ -59,3 +63,4 @@ async def shutdown_event():
     if USE_REDIS:
         redis_client = redis_connect()
         redis_client.flushall()
+        redis_client.close()

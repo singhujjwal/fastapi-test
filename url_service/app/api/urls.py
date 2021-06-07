@@ -9,17 +9,21 @@ from starlette import responses
 from .redis_py import redis_connect
 
 # from ..dependencies import get_producer
-
 from fastapi.param_functions import Depends
-
-
 from .models import UrlOut, UrlIn
 from . import url_manager
 
+## Logging code
+from ..utils.formatlogs import CustomFormatter
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+log.addHandler(ch)
+
+## Logging end
 
 
 urls = APIRouter()
@@ -30,24 +34,7 @@ async def get_short_url(payload: UrlIn,
     # redis_client: redis.client.Redis= redis_connect()
     ):
     redis_client = redis_connect()
-
-    # # check if the long url is already present return it
-    # # else create a new one and return it
-
-    # if redis_client.exists(payload.longUrl):
-    #     log.debug("The short url is already present in cache, returning...")
-    #     tiny_url = redis_client.get(payload.longUrl).decode('utf-8')
-    #     result_json = {}
-    #     result_json['shortUrl'] = f"https://u.co/{tiny_url}"
-    #     return result_json
     short_url = await url_manager.get_short_url(redis_client, payload)
-    # print (f"This is the producer .. {producer}")
-    # print (f"This is redis_client {redis_client}")
-
-# Check in database if the short_url and long_url keypair is present
-#   Later ensure collisions is not there
-#   Also set expiry 
-#   update_db(short_url, payload.longUrl)
 
     response = {
         **short_url
@@ -58,16 +45,11 @@ async def get_short_url(payload: UrlIn,
 async def get_long_url(in_url: str):
     redis_client = redis_connect()
     longUrl = await url_manager.get_long_url(redis_client, in_url)
-
-  
     if not longUrl:
         raise HTTPException(status_code=404, 
                 detail="No long url mapped to this short url")
-
     longUrl = longUrl.decode('utf-8')
-    print (f"returned long url: {longUrl} from the url_manager")
-
-    print (f"the long url is {longUrl}")
+    log.debug (f"returned long url: {longUrl} from the url_manager")
     result = {}
     result['longUrl'] = longUrl
     
@@ -75,3 +57,4 @@ async def get_long_url(in_url: str):
         **result
     }
     return response
+
