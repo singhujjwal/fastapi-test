@@ -1,6 +1,5 @@
 # fastapi-test
-This is directly copied from https://dev.to/paurakhsharma/microservice-in-python-using-fastapi-24cc to help me understand fastapi as well as brush up my python.
-Enough of just DevOps !!!
+This is  copied from https://dev.to/paurakhsharma/microservice-in-python-using-fastapi-24cc to help me understand fastapi as well as brush up my python.
 
 ## Now comes a demo project on top of fastapi
 I have few resources available, I need to create a distributed application
