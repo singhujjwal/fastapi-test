@@ -4,3 +4,4 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8123 &
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8124 &
 
 ## shutdown pkill uvicorn
+# kill $(lsof -ti:8121)
