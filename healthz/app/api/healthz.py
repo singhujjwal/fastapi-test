@@ -27,4 +27,10 @@ healthz = APIRouter()
 
 @healthz.get('/')
 async def get_health_status():
+    print("Got a request for health status")
     return {"Hello": "World"}
+
+@healthz.get('/req')
+async def get_health_status():
+    print("Got aa HIT------------------------")
+    return {"Hello": "Request"}
